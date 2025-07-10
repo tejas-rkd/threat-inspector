@@ -33,14 +33,22 @@ threat-inspector
 │   └── cli                    # Command-line interface
 │       ├── __init__.py
 │       └── argument_parser.py  # Handles command-line argument parsing
-├── unit_tests                      # Unit tests for the application
+├── unit_tests                 # Unit tests for the application
 │   ├── __init__.py
 │   ├── test_analyzer.py       # Tests for the Analyzer class
-│   ├── test_cve_service.py     # Tests for the CVEService class
+│   ├── test_cve_service.py    # Tests for the CVEService class
 │   └── test_document_service.py # Tests for the DocumentService class
-├── requirements.txt           # Project dependencies
-├── setup.py                   # Setup script for the project
-└── README.md                  # Project documentation
+├── integration_tests          # Integration tests for end-to-end testing
+│   ├── test.py               # Main integration test suite
+│   ├── run_tests.py          # Test runner script
+│   └── data                  # Sample vulnerable code files for testing
+│       ├── 2017_18342.py     
+│       ├── 2023_43364.py     
+│       └── 2024‑45848.py     
+├── inspector.py              # Alternative entry point
+├── requirements.txt          # Project dependencies
+├── setup.py                  # Setup script for the project
+└── README.md                 # Project documentation
 ```
 
 ## Installation
@@ -52,9 +60,20 @@ threat-inspector
    ```
 
 2. Install the required dependencies:
+   
+   You can install dependencies using either of these two methods:
+   
+   **Method 1: Using requirements.txt** (recommended for users)
    ```
    pip install -r requirements.txt
    ```
+   
+   **Method 2: Using setup.py** (recommended for development)
+   ```
+   pip install -e .
+   ```
+   
+   The second method installs the package in development mode, making it importable from anywhere in your Python environment.
 
 ## Usage
 
@@ -65,6 +84,54 @@ python src/main.py <CVE_ID> --path <path_to_code_directory>
 ```
 
 Replace `<CVE_ID>` with the CVE identifier (e.g., CVE-2021-44228) and `<path_to_code_directory>` with the path to the codebase you want to analyze.
+
+## Testing
+
+The project includes comprehensive test suites to ensure reliability and correctness:
+
+### Unit Tests
+
+Unit tests are located in the `unit_tests/` directory and test individual components:
+
+```bash
+# Run all unit tests
+python -m pytest unit_tests/ -v
+
+# Run specific test file
+python -m pytest unit_tests/test_analyzer.py -v
+```
+
+### Integration Tests
+
+Integration tests are located in the `integration_tests/` directory and test the complete application workflow with real CVE data:
+
+```bash
+# Run integration tests using the test runner
+cd integration_tests
+python run_tests.py
+
+# Or run using pytest
+python -m pytest integration_tests/test.py -v
+
+# Or run using unittest
+cd integration_tests
+python -m unittest test.py -v
+```
+
+The integration tests automatically:
+- Extract CVE IDs from test data filenames (e.g., `2017_18342.py` → `CVE-2017-18342`)
+- Run the main application with each CVE ID and corresponding vulnerable code file
+- Verify that the application runs successfully and produces meaningful output
+- Test error handling for invalid inputs
+
+#### Test Data
+
+The `integration_tests/data/` directory contains sample vulnerable code files:
+- `2017_18342.py` - YAML deserialization vulnerability (CVE-2017-18342)
+- `2023_43364.py` - Code injection vulnerability (CVE-2023-43364)  
+- `2024‑45848.py` - Eval injection vulnerability (CVE-2024-45848)
+
+These files demonstrate common vulnerability patterns and serve as test cases for the threat analysis functionality.
 
 ## Contributing
 
