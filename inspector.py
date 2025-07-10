@@ -97,7 +97,11 @@ def display_vulnerability_info(vuln_data):
 
 def load_codebase(path):
     print(path)
-    loader = DirectoryLoader(path, glob='*.go;*.js;*.py;*.ts;*.java;*.c;*.cpp;*.h;*.hpp;*.php;*.sql' ,show_progress=True)
+    # Use the provided path and a list of glob patterns
+    patterns = [
+        '*.go', '*.js', '*.py', '*.ts', '*.java', '*.c', '*.cpp', '*.h', '*.hpp', '*.php', '*.sql'
+    ]
+    loader = DirectoryLoader(path, glob=patterns, show_progress=True)
     documents = loader.load()
     print(f"Loaded {len(documents)} page(s) from {path}")
     return documents
@@ -133,6 +137,9 @@ def get_vector_store(embedding_function, persist_directory=CHROMA_PATH):
 def index_documents(chunks, embedding_function, persist_directory=CHROMA_PATH):
     """Indexes document chunks into the Chroma vector store."""
     print(f"Indexing {len(chunks)} chunks...")
+    if not chunks:
+        print("No document chunks to index. Skipping vector store creation.")
+        return None
     # Use from_documents for initial creation.
     # This will overwrite existing data if the directory exists but isn't a valid Chroma DB.
     # For incremental updates, initialize Chroma first and use vectorstore.add_documents().
@@ -202,6 +209,9 @@ def run_analysis(cve_id, path):
     chunks = split_documents(code)
     embedding_function = get_embedding_function()
     vector_store = index_documents(chunks, embedding_function)
+    if not vector_store:
+        print("No code found to analyze. Exiting analysis.")
+        return
     rag_chain = create_rag_chain(vector_store)
     query_rag(rag_chain, "what language this code is in?")
     return
