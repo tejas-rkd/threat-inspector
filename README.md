@@ -14,27 +14,27 @@ Threat Inspector is a Python application designed to analyze vulnerabilities in 
 ```
 threat-inspector
 ├── src
-│   ├── __init__.py
+│   ├
 │   ├── main.py                # Entry point of the application
 │   ├── core                   # Core functionality
-│   │   ├── __init__.py
+│   │   ├
 │   │   ├── analyzer.py        # Analyzes vulnerabilities in code
 │   │   ├── embeddings.py      # Manages embedding models
 │   │   ├── vector_store.py    # Handles document embeddings storage
 │   │   └── rag_chain.py       # Creates the RAG chain for querying
 │   ├── services               # Services for fetching and processing data
-│   │   ├── __init__.py
+│   │   ├
 │   │   ├── cve_service.py     # Fetches CVE information
 │   │   └── document_service.py # Loads and processes code documents
 │   ├── utils                  # Utility functions and constants
-│   │   ├── __init__.py
+│   │   ├
 │   │   ├── constants.py       # Defines constants used in the application
 │   │   └── helpers.py         # Utility functions for various tasks
 │   └── cli                    # Command-line interface
-│       ├── __init__.py
+│       ├
 │       └── argument_parser.py  # Handles command-line argument parsing
 ├── unit_tests                 # Unit tests for the application
-│   ├── __init__.py
+│   ├
 │   ├── test_analyzer.py       # Tests for the Analyzer class
 │   ├── test_cve_service.py    # Tests for the CVEService class
 │   └── test_document_service.py # Tests for the DocumentService class
@@ -186,10 +186,59 @@ The `integration_tests/data/` directory contains sample vulnerable code files:
 
 These files demonstrate common vulnerability patterns and serve as test cases for the threat analysis functionality.
 
-## Contributing
+## Design Rationale
 
-Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
+This section explains the key architectural and technology choices made in developing Threat Inspector:
 
-## License
+### Architecture Decisions
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+**Modular Structure**: The project is organized into distinct modules (`core`, `services`, `utils`, `cli`) to promote separation of concerns and maintainability. Each module has a specific responsibility:
+- `core`: Contains the main business logic for vulnerability analysis
+- `services`: Handles external data fetching and document processing
+- `utils`: Provides shared utilities and constants
+- `cli`: Manages command-line interface functionality
+
+**Service Layer Pattern**: CVE data fetching and document processing are abstracted into service classes (`CVEService`, `DocumentService`) to enable easy testing, mocking, and potential future integration with different data sources.
+
+### Technology Stack
+
+**Python**: Chosen for its robust ecosystem of libraries for text processing, machine learning, and API integration. Python's readability and extensive community support make it ideal for security analysis tools.
+
+**Ollama for Local LLM**: We chose Ollama over cloud-based LLM services for several reasons:
+- **Privacy**: Code analysis often involves sensitive or proprietary code that shouldn't be sent to external services
+- **Cost**: No per-request charges for analysis
+- **Reliability**: No dependency on internet connectivity or external service availability
+- **Control**: Full control over model versions and configurations
+
+**Retrieval-Augmented Generation (RAG)**: Implemented to combine the power of large language models with specific CVE knowledge:
+- Provides contextually relevant vulnerability analysis
+- Reduces hallucination by grounding responses in factual CVE data
+- Allows for dynamic knowledge updates without retraining models
+
+**Vector Store Approach**: Used for efficient similarity search and retrieval of relevant vulnerability information, enabling fast matching between code patterns and known vulnerabilities.
+
+### Model Choices
+
+**Mistral**: Selected as the primary LLM for its strong performance on code analysis tasks while maintaining reasonable resource requirements for local deployment.
+
+**all-minilm**: Chosen for embeddings due to its balance of quality and speed, making it suitable for real-time code analysis without requiring excessive computational resources.
+
+### Testing Strategy
+
+**Comprehensive Test Coverage**: Includes both unit and integration tests to ensure reliability:
+- **Unit Tests**: Verify individual component functionality in isolation
+- **Integration Tests**: Test end-to-end workflows with real CVE data
+- **Real Vulnerability Samples**: Test data includes actual vulnerable code patterns to validate practical effectiveness
+
+### API Integration
+
+**OSV API**: Selected for CVE data because:
+- Comprehensive vulnerability database
+- Well-maintained and regularly updated
+- Free access without rate limiting concerns
+- Structured JSON responses suitable for programmatic processing
+
+This design prioritizes security, maintainability, and practical usability while keeping the solution lightweight and deployable in various environments.
+
+## AI Usage:
+Files related to testing, installtion and README have been generated by AI.
