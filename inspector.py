@@ -33,13 +33,6 @@ PROMPT_TEMPLATE = (
 
 
 def fetch_cve_info(cve_id):
-    """
-    Fetch vulnerability information for a given CVE ID from the OSV API.
-    Args:
-        cve_id (str): The CVE identifier (e.g., CVE-2021-44228)
-    Returns:
-        dict: The JSON response from the API
-    """
     print(f"Fetching information for {cve_id}...")
     url = OSV_API_URL.format(cve_id)
     try:
@@ -109,7 +102,7 @@ def index_documents(chunks, embedding_function, persist_directory=CHROMA_PATH):
         embedding=embedding_function,
         persist_directory=persist_directory
     )
-    vectorstore.persist()  # Ensure data is saved
+    # vectorstore.persist()  # Ensure data is saved
     print(f"Indexing complete. Data saved to: {persist_directory}")
     return vectorstore
 
@@ -149,7 +142,6 @@ def create_rag_chain(
 def query_rag(chain, question):
     """Queries the RAG chain and prints the response."""
     print("\nQuerying RAG chain...")
-    print(f"Question: {question}")
     response = chain.invoke(question)
     print("\nResponse:")
     print(response)
@@ -190,9 +182,6 @@ VULNERABILITY INFORMATION:
     return question
 
 
-
-
-
 def run_analysis(cve_id, path):
     vuln_data = fetch_cve_info(cve_id)
     code = load_codebase(path)
@@ -210,7 +199,7 @@ def run_analysis(cve_id, path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Fetch and display vulnerability information for a CVE ID from the OSV database"
+        description="Fetch and display vulnerability information for a CVE ID in context of your code"
     )
     parser.add_argument("cve_id", help="The CVE identifier (e.g., CVE-2021-44228)")
     parser.add_argument(
@@ -222,10 +211,16 @@ def main():
     args = parser.parse_args()
 
     # Ensure the CVE ID is properly formatted
-    cve_id = args.cve_id
+    cve_id = args.cve_id.upper()
     if not cve_id.startswith("CVE-"):
         print("Warning: CVE ID should be in the format 'CVE-YYYY-NNNNN'")
+        sys.exit(1)
+
+    # Ensure the Path is valid
     path = args.path
+    if not os.path.exists(path) or not os.path.isdir(path):
+        print(f"Error: The specified path '{path}' does not exist or is not a directory.")
+        sys.exit(1)
 
     run_analysis(cve_id, path)
     cleanup()
