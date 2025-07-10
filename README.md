@@ -1,6 +1,6 @@
 # Threat Inspector
 
-Threat Inspector is a Python application designed to analyze vulnerabilities in codebases by fetching CVE (Common Vulnerabilities and Exposures) information and assessing the potential impact on the code. The application utilizes retrieval-augmented generation (RAG) techniques to provide detailed analysis and recommendations based on the context of the code.
+Threat Inspector is a AI application designed to analyze vulnerabilities in codebases by fetching CVE (Common Vulnerabilities and Exposures) information and assessing the potential impact on the code. The application utilizes retrieval-augmented generation (RAG) techniques to provide detailed analysis and recommendations based on the context of the code.
 
 ## Features
 
