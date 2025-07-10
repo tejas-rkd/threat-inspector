@@ -11,6 +11,8 @@ from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+import shutil
+import os
 
 CHROMA_PATH = "./.chroma_db" # Directory to store ChromaDB data
 
@@ -101,7 +103,7 @@ def load_codebase(path):
     patterns = [
         '*.go', '*.js', '*.py', '*.ts', '*.java', '*.c', '*.cpp', '*.h', '*.hpp', '*.php', '*.sql'
     ]
-    loader = DirectoryLoader(path, glob=patterns, show_progress=True)
+    loader = DirectoryLoader(path, glob=patterns, recursive=True, show_progress=True)
     documents = loader.load()
     print(f"Loaded {len(documents)} page(s) from {path}")
     return documents
@@ -196,7 +198,13 @@ def query_rag(chain, question):
     print("\nResponse:")
     print(response)
 
-
+def cleanup():
+    if os.path.exists(CHROMA_PATH):
+        shutil.rmtree(CHROMA_PATH)
+        print(f"Deleted vector store directory: {CHROMA_PATH}")
+    else:
+        print(f"No vector store directory found at: {CHROMA_PATH}")
+    return
 
 
 
@@ -234,6 +242,7 @@ def main():
     path = args.path
     
     run_analysis(cve_id, path)
+    cleanup()
     # display_vulnerability_info(vuln_data)
     
 
