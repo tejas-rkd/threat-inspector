@@ -206,13 +206,42 @@ def cleanup():
         print(f"No vector store directory found at: {CHROMA_PATH}")
     return
 
+def generate_question(vuln_data):
+    question = f"""
+You are a cybersecurity expert analyzing a vulnerability (CVE) and its potential impact on a specific codebase.
 
+VULNERABILITY INFORMATION:
+{json.dumps(vuln_data, indent=2)}
+
+ANALYSIS REQUEST:
+Please provide a detailed analysis covering:
+
+1. CVE ANALYSIS:
+   - Explain what this vulnerability is and how it works
+   - Detail which dependencies/packages are affected
+   - Assess the severity and potential attack vectors
+
+2. CODEBASE IMPACT ASSESSMENT:
+   - Check if any dependencies in this codebase match the affected packages
+   - Identify potential vulnerable components based on the file structure
+   - Assess the risk level for this specific codebase
+   - Provide specific recommendations for remediation
+
+3. ACTIONABLE RECOMMENDATIONS:
+   - List specific steps to check for vulnerability presence
+   - Recommend version updates or patches if applicable
+   - Suggest security best practices to prevent similar issues
+
+Keep your analysis practical and actionable. If the codebase doesn't appear to be affected, clearly state that and explain why.
+
+"""
+    return question
 
 
 
 
 def run_analysis(cve_id, path):
-    #vuln_data = fetch_cve_info(cve_id)
+    vuln_data = fetch_cve_info(cve_id)
     code = load_codebase(path)
     chunks = split_documents(code)
     embedding_function = get_embedding_function()
@@ -221,7 +250,8 @@ def run_analysis(cve_id, path):
         print("No code found to analyze. Exiting analysis.")
         return
     rag_chain = create_rag_chain(vector_store)
-    query_rag(rag_chain, "what language this code is in?")
+    question = generate_question(vuln_data)
+    query_rag(rag_chain, question)
     return
 
 def main():
