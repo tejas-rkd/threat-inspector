@@ -1,4 +1,8 @@
-
+"""
+THIS IS NOT PART OF PROJECT.
+THIS IS THE ORIGINAL SINGLE FILE WHICH HAS BEEN BIFURCATED INTO THE FOLDER STRUCTURE OF CURRENT PROJECT.
+CAN BE EXECUTED AS python3 inspector.py <cve_id> --path=<path to codebase>
+"""
 import argparse
 import json
 import sys
