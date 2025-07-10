@@ -75,6 +75,59 @@ threat-inspector
    
    The second method installs the package in development mode, making it importable from anywhere in your Python environment.
 
+
+### Install and Run AI
+
+**Option 1: Automated Setup (Recommended)**
+
+We provide setup scripts to automate the Ollama installation and configuration:
+
+**For Linux:**
+```bash
+python3 setup_ollama.py
+```
+
+**For Windows:**
+```batch
+setup_ollama.bat
+```
+
+**Option 2: Manual Setup**
+
+If you prefer to set up Ollama manually:
+
+1. **Install Ollama:**
+
+   **For Linux:**
+   ```bash
+   curl -fsSL https://ollama.com/install.sh | sh
+   ```
+   
+   **For macOS:**
+   ```bash
+   brew install ollama
+   ```
+   
+   **For Windows:**
+   Download and install from [https://ollama.com/download](https://ollama.com/download)
+
+2. **Install required models:**
+
+   ```bash
+   ollama pull mistral:latest
+   ollama pull all-minilm:latest
+   ```
+
+3. **Start Ollama service:**
+
+   **For Linux/macOS:**
+   ```bash
+   ollama serve
+   ```
+   
+   **For Windows:**
+   The Ollama service should start automatically. If not, you can start it from the system tray or by running `ollama serve` in Command Prompt.
+
 ## Usage
 
 To run the application, use the following command:
